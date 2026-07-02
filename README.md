@@ -32,6 +32,10 @@ airflow-banking/
 └── plugins/
 ```
 
+## Star Schema
+
+![Star schema banking data warehouse](image/postgres%20-%20banking_dw%20-%20public%20-%20fact_transaction.png)
+
 ## Service yang jalan
 
 | Service | Peran |
