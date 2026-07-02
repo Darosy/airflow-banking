@@ -1,8 +1,8 @@
-# Airflow Banking ETL — Docker Compose (official Airflow 3.x, CeleryExecutor)
+# Airflow Banking ETL — Docker Compose (Airflow 3.x resmi, CeleryExecutor)
 
-Basis compose ini adalah [official docker-compose Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)
+Dasar compose ini adalah [docker-compose resmi Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)
 (CeleryExecutor + Redis + Postgres, arsitektur Airflow 3.x dengan api-server &
-dag-processor terpisah), ditambah service custom untuk case study Banking ETL.
+dag-processor terpisah), ditambah service custom untuk studi kasus Banking ETL.
 
 ## Struktur folder
 ```
@@ -36,7 +36,7 @@ airflow-banking/
 
 ![Star schema banking data warehouse](image/fact_transaction.png)
 
-## Service yang jalan
+## Service yang berjalan
 
 | Service | Peran |
 |---|---|
@@ -48,14 +48,14 @@ airflow-banking/
 | `airflow-dag-processor` | parsing file DAG (terpisah dari scheduler di Airflow 3) |
 | `airflow-worker` | eksekusi task (Celery worker) |
 | `airflow-triggerer` | deferred task |
-| `airflow-init` | sekali jalan: migrate DB, buat user, set Variable & Connection banking |
-| `generate-dataset` | sekali jalan: generate 7 CSV (profile `tools`, manual trigger) |
+| `airflow-init` | sekali jalan: migrasi DB, membuat user, mengatur Variable & Connection banking |
+| `generate-dataset` | sekali jalan: generate 7 CSV (profile `tools`, dijalankan manual) |
 | `flower` (opsional) | monitoring Celery, profile `flower` |
 | `airflow-cli` (opsional) | akses `airflow` CLI ad-hoc, profile `debug` |
 
 ## Langkah menjalankan
 
-1. **Copy file environment:**
+1. **Salin file environment:**
    ```bash
    cp .env-example .env
    ```
@@ -80,8 +80,8 @@ airflow-banking/
    docker compose build
    ```
 
-5. **Init Airflow** — migrate DB, buat user admin, set Variable `banking_dataset_path`
-   & Connection `postgres_dw` otomatis:
+5. **Inisialisasi Airflow** — migrasi DB, membuat user admin, mengatur Variable
+   `banking_dataset_path` & Connection `postgres_dw` secara otomatis:
    ```bash
    docker compose up airflow-init
    ```
@@ -91,14 +91,14 @@ airflow-banking/
    ```bash
    docker compose up -d
    ```
-   (Kalau mau nyalain Flower juga: `docker compose --profile flower up -d`)
+   (Kalau mau menyalakan Flower juga: `docker compose --profile flower up -d`)
 
 7. **Buka UI**: http://localhost:8080 (login sesuai `.env`, default `airflow` / `airflow`).
-   
+
    Buka **Admin → Connections → `+`** lalu isi:
    | Field | Value |
    |---|---|
-   | Connection ID | `postgres_dw(bebas terserah anda)` |
+   | Connection ID | `postgres_dw (bebas terserah Anda)` |
    | Connection Type | `Postgres` |
    | Host | `<postgres-dw (docker local)>` |
    | Database | `banking_dw (docker local)` |
@@ -111,7 +111,7 @@ airflow-banking/
 
    ![Flow Data Processing](image/2026-07-02_20-15-01.png)
 
-8. **Cek hasil di database** (host, via psql/DBeaver):
+8. **Cek hasil di database** (dari host, via psql/DBeaver):
    ```
    host: localhost | port: 5433 | db: banking_dw | user: banking | password: banking123
    ```
@@ -133,14 +133,14 @@ docker compose run --rm airflow-cli airflow connections list
 docker compose exec airflow-apiserver airflow connections get postgres_dw
 docker compose exec airflow-apiserver airflow variables get banking_dataset_path
 
-# Stop semua (data tetap ada di docker volume)
+# Hentikan semua (data tetap ada di docker volume)
 docker compose down
 
-# Stop semua + HAPUS semua data (reset total)
+# Hentikan semua + HAPUS semua data (reset total)
 docker compose down -v
 ```
 
-## Kalau ubah requirements.txt
+## Kalau mengubah requirements.txt
 ```bash
 docker compose build
 docker compose up -d --force-recreate airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer
@@ -154,93 +154,93 @@ docker compose up -d --force-recreate airflow-apiserver airflow-scheduler airflo
   ```bash
   python3 -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
   ```
-- **`AIRFLOW__API_AUTH__JWT_SECRET`** juga cuma nilai default dev — ganti kalau
+- **`AIRFLOW__API_AUTH__JWT_SECRET`** juga hanya nilai default dev — ganti kalau
   environment-nya bisa diakses orang lain.
-- **`generate-dataset`** pakai `profiles: [tools]` — sengaja tidak ikut start
-  otomatis waktu `docker compose up -d`, harus dipanggil manual via `run --rm`.
-- Minimal resource yang direkomendasikan Airflow resmi: **4 GB RAM, 2 CPU, 10 GB disk**
-  untuk Docker — `airflow-init` akan warning kalau kurang.
-- Password `airflow`/`airflow` dan `banking123` di file ini contoh untuk
-  lokal/dev saja — ganti sebelum dipakai di environment yang lebih terbuka.
+- **`generate-dataset`** memakai `profiles: [tools]` — sengaja tidak ikut start
+  otomatis saat `docker compose up -d`, harus dipanggil manual via `run --rm`.
+- Resource minimal yang direkomendasikan Airflow resmi: **4 GB RAM, 2 CPU, 10 GB disk**
+  untuk Docker — `airflow-init` akan memberi warning kalau kurang.
+- Password `airflow`/`airflow` dan `banking123` di file ini hanya contoh untuk
+  lokal/dev — ganti sebelum dipakai di environment yang lebih terbuka.
 
 
 ------------------------------------------------------------------------------
-# Superset Setup (connects to your existing DWH)
+# Setup Superset (terhubung ke DWH yang sudah ada)
 
-This spins up **only Superset** — no database or seeder included, since your
-data warehouse already exists. Three containers:
+Setup ini hanya menjalankan **Superset saja** — tanpa database atau seeder,
+karena data warehouse-mu sudah ada. Tiga container:
 
-- `superset_db` — Postgres holding Superset's own metadata (dashboards, users,
-  saved charts). This is separate from your DWH.
-- `redis` — caching / async query layer for Superset.
-- `superset` — the Superset web app, on port 8088.
+- `superset_db` — Postgres yang menyimpan metadata Superset sendiri (dashboard,
+  user, saved chart). Ini terpisah dari DWH-mu.
+- `redis` — layer caching / async query untuk Superset.
+- `superset` — aplikasi web Superset, di port 8088.
 
-## 1. Log in
+## 1. Login
 
-Open **http://localhost:8088**
+Buka **http://localhost:8088**
 
 ```
 username: admin
 password: admin
 ```
 
-Change this immediately if Superset will be reachable outside your machine.
+Segera ganti kredensial ini kalau Superset akan diakses dari luar mesinmu.
 
-## 2. Connect to your DWH
+## 2. Hubungkan ke DWH-mu
 
-Settings → **Database Connections** → **+ Database**, pick your engine, and
-enter your existing DWH's connection details.
+Settings → **Database Connections** → **+ Database**, pilih engine-mu, lalu
+masukkan detail koneksi DWH yang sudah ada.
 
-**Networking depends on where your DWH lives:**
+**Konfigurasi jaringan tergantung di mana DWH-mu berada:**
 
-| Your DWH is... | Host to use in Superset |
+| DWH kamu berada di... | Host yang dipakai di Superset |
 |---|---|
-| A managed cloud DB (RDS, Cloud SQL, Snowflake, BigQuery, etc.) | Its normal public/VPC hostname — works as-is |
-| Postgres running directly on your machine (not in Docker) | `host.docker.internal` — uncomment the `extra_hosts` block in `docker-compose.yml` first |
-| A container in another `docker compose` project | Put both projects on the same Docker network, then use that container's service name as host |
-| Already on this same Docker network | Use its service name directly |
+| Managed cloud DB (RDS, Cloud SQL, Snowflake, BigQuery, dll.) | Hostname publik/VPC normalnya — langsung bisa dipakai |
+| Postgres yang jalan langsung di mesinmu (bukan di Docker) | `host.docker.internal` — uncomment dulu blok `extra_hosts` di `docker-compose.yml` |
+| Container di project `docker compose` lain | Satukan kedua project ke Docker network yang sama, lalu pakai service name container tersebut sebagai host |
+| Sudah di Docker network yang sama | Pakai service name-nya langsung |
 
-**Driver note:** the `apache/superset` image ships with the Postgres driver
-(`psycopg2`) built in. If your DWH is MySQL, Snowflake, BigQuery, Redshift,
-etc., you'll need to add the matching driver — easiest way:
+**Catatan driver:** image `apache/superset` sudah menyertakan driver Postgres
+(`psycopg2`) secara bawaan. Kalau DWH-mu MySQL, Snowflake, BigQuery, Redshift,
+dll., kamu perlu menambahkan driver yang sesuai — cara termudah:
 
 ```dockerfile
 # Dockerfile
 FROM apache/superset:latest
 USER root
-RUN pip install snowflake-sqlalchemy   # or mysqlclient, redshift_connector, etc.
+RUN pip install snowflake-sqlalchemy   # atau mysqlclient, redshift_connector, dll.
 USER superset
 ```
 
-then swap `image: apache/superset:latest` for `build: .` in `docker-compose.yml`.
+lalu ganti `image: apache/superset:latest` menjadi `build: .` di `docker-compose.yml`.
 
-## 3. Build dashboards
+## 3. Membuat dashboard
 
-`queries/` has the 6 reference SQL queries mapped to common banking analytics
-questions (transaction trends, customer 360, branch performance, channel
-usage, product performance, fraud detection) — written against the star
-schema (`dim_customers`, `dim_accounts`, `dim_branches`, `dim_channels`,
-`dim_date`, `fact_transaction`). Adjust table/column names if yours differ,
-paste into **SQL Lab**, then save as a dataset and build charts from there.
+`./superset/queries/` berisi 6 query SQL referensi yang dipetakan ke pertanyaan analitik
+banking yang umum (tren transaksi, customer 360, performa cabang, penggunaan
+channel, performa produk, deteksi fraud) — ditulis berdasarkan star schema
+(`dim_customers`, `dim_accounts`, `dim_branches`, `dim_channels`, `dim_date`,
+`fact_transaction`). Sesuaikan nama tabel/kolom kalau punyamu berbeda, tempel
+ke **SQL Lab**, lalu simpan sebagai dataset dan buat chart dari situ.
 
    ![Contoh Dashboard](image/2026-07-02_21-47-36.png)
 
 ## 4. SQL
 
-01_transaction_analytics.sql
+`01_transaction_analytics.sql`
 ![Contoh Dashboard](image/2026-07-02_21-53-44.png)
 
-02_customer_360.sql
+`02_customer_360.sql`
 ![Contoh Dashboard](image/2026-07-02_21-54-22.png)
 ![Contoh Dashboard](image/2026-07-02_21-54-40.png)
 
-04_channel_analysis.sql
+`04_channel_analysis.sql`
 ![Contoh Dashboard](image/2026-07-02_21-55-09.png)
 
-05_product_performance.sql
+`05_product_performance.sql`
 ![Contoh Dashboard](image/2026-07-02_21-55-33.png)
 ![Contoh Dashboard](image/2026-07-02_21-56-04.png)
 
-06_risk_fraud.sql
+`06_risk_fraud.sql`
 ![Contoh Dashboard](image/2026-07-02_21-57-18.png)
 ![Contoh Dashboard](image/2026-07-02_21-57-59.png)
