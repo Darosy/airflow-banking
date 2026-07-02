@@ -379,11 +379,13 @@ services:
       DATABASE_PASSWORD: superset
       REDIS_HOST: redis_superset
       REDIS_PORT: 6379
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
     ports:
       - "8088:8088"
     volumes:
       - superset_home:/app/superset_home
       - ./superset/superset_init.sh:/app/docker-init.sh
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py
     entrypoint: ["/bin/bash", "/app/docker-init.sh"]
 
 volumes:

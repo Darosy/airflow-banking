@@ -34,7 +34,7 @@ airflow-banking/
 
 ## Star Schema
 
-![Star schema banking data warehouse](image/postgres%20-%20banking_dw%20-%20public%20-%20fact_transaction.png)
+![Star schema banking data warehouse](image/fact_transaction.png)
 
 ## Service yang jalan
 
@@ -108,6 +108,8 @@ airflow-banking/
    Klik **Save**.
 
    Cari DAG `dag_banking_etl`, unpause, klik ▶️ Trigger DAG.
+
+   ![Flow Data Processing](image/2026-07-02_20-15-01.png)
 
 8. **Cek hasil di database** (host, via psql/DBeaver):
    ```
@@ -220,3 +222,25 @@ usage, product performance, fraud detection) — written against the star
 schema (`dim_customers`, `dim_accounts`, `dim_branches`, `dim_channels`,
 `dim_date`, `fact_transaction`). Adjust table/column names if yours differ,
 paste into **SQL Lab**, then save as a dataset and build charts from there.
+
+   ![Contoh Dashboard](image/2026-07-02_21-47-36.png)
+
+## 4. SQL
+
+01_transaction_analytics.sql
+![Contoh Dashboard](image/2026-07-02_21-53-44.png)
+
+02_customer_360.sql
+![Contoh Dashboard](image/2026-07-02_21-54-22.png)
+![Contoh Dashboard](image/2026-07-02_21-54-40.png)
+
+04_channel_analysis.sql
+![Contoh Dashboard](image/2026-07-02_21-55-09.png)
+
+05_product_performance.sql
+![Contoh Dashboard](image/2026-07-02_21-55-33.png)
+![Contoh Dashboard](image/2026-07-02_21-56-04.png)
+
+06_risk_fraud.sql
+![Contoh Dashboard](image/2026-07-02_21-57-18.png)
+![Contoh Dashboard](image/2026-07-02_21-57-59.png)

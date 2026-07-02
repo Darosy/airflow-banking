@@ -1,4 +1,4 @@
 FROM apache/superset:latest
 USER root
-RUN pip install --no-cache-dir psycopg2-binary
+RUN uv pip install --python /app/.venv/bin/python3 --no-cache psycopg2-binary
 USER superset
