@@ -1,0 +1,10 @@
+# Environment variables (sensitive information)
+.env
+
+# Apache Airflow files
+logs/
+__pycache__/
+*.pyc
+
+# Generated datasets (ignore CSVs in include/dataset)
+include/dataset/*.csv

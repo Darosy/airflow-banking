@@ -1,0 +1,6 @@
+# Tidak dipin ke versi spesifik supaya pip resolve versi yg kompatibel
+# dengan Airflow 3.2.2 di base image. Kalau butuh reproducibility ketat,
+# pin versi setelah dicek cocok di environment kamu.
+apache-airflow-providers-postgres
+apache-airflow-providers-fab
+pandas
