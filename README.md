@@ -10,7 +10,6 @@ airflow-banking/
 ├── docker-compose.yaml
 ├── Dockerfile                 <- extend apache/airflow:3.2.2 + provider postgres + pandas
 ├── requirements.txt
-├── .env
 ├── .env-example               <- template untuk file .env
 ├── config/                    <- custom airflow.cfg (opsional, kosong = default)
 ├── include/
