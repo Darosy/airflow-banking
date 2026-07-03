@@ -244,11 +244,13 @@ ke **SQL Lab**, lalu simpan sebagai dataset dan buat chart dari situ.
 ![Contoh Dashboard](image/2026-07-02_21-54-22.png)
 ![Contoh Dashboard](image/2026-07-02_21-54-40.png)
 
-`04_channel_analysis.sql`
+`03_branch_performance.sql`
 ![Contoh Dashboard](image/2026-07-02_21-55-09.png)
 
-`05_product_performance.sql`
+`04_channel_analysis.sql`
 ![Contoh Dashboard](image/2026-07-02_21-55-33.png)
+
+`05_product_performance.sql`
 ![Contoh Dashboard](image/2026-07-02_21-56-04.png)
 
 `06_risk_fraud.sql`
