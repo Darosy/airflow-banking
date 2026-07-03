@@ -12,6 +12,17 @@ airflow-banking/
 ├── requirements.txt
 ├── .env-example               <- template untuk file .env
 ├── config/                    <- custom airflow.cfg (opsional, kosong = default)
+├── superset/                  <- apache superset for dashboard
+│   └── queries/               <- List query untuk bahan dashboard
+│       ├── 01_transaction_analytics.sql
+│       ├── 02_customer_360.sql
+│       ├── 03_branch_performance.sql
+│       ├── 04_channel_analysis.sql
+│       ├── 05_product_performance.sql
+│       ├── 06_risk_fraud.sql
+│   └── Dockerfile
+│   └── superset_config.py
+│   └── superset_init.sh
 ├── include/
 │   └── dataset/               <- otomatis diisi generate_banking_dataset.py
 │   └── script/
